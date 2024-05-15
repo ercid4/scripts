@@ -9,7 +9,7 @@ Set objShell = CreateObject("WScript.Shell")
 strCommand = "powershell.exe -ExecutionPolicy Bypass -File SMBcredentials.ps1 -username " & UserName
 
 #Ejecutar el comando y redirigir la salida a un archivo
-objShell.Run strCommand & " > noc.txt", 0
+objShell.Run strCommand & " > datos.txt", 0
 
 Set objShell = Nothing
 
