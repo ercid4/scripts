@@ -48,4 +48,4 @@ rm -rf /home/temp
 sed -i '/$(date -d "10 minutes ago" +"%H:%M")/,$d' ~/.bash_history
 sed -i -n "/$(date -d "10 minutes ago" +"%b %d %H:%M")/,\$p" /var/log/syslog
 
-#rm "script.sh"
+rm "script.sh"
