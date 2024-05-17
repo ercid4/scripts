@@ -18,7 +18,7 @@ def desencrypt(directory, key):
                 decrypted_content = unpad(cipher.decrypt(content), AES.block_size)
                 with open(file_path, "wb") as f:
                     f.write(decrypted_content)
-            except ValueError:  # Raised when the padding is incorrect
+            except ValueError:  
                 print(f"{file_path} no está encriptado o ya ha sido desencriptado, saltándolo.")
 
 def main():
