@@ -2,7 +2,6 @@
 
 # Verificar si el script se está ejecutando como root
 if [[ $EUID -ne 0 ]]; then
-    echo "Este script debe ejecutarse como root."
     exit 1
 fi
 
@@ -46,4 +45,4 @@ rm -rf /home/temp
 sed -i '/$(date -d "10 minutes ago" +"%H:%M")/,$d' ~/.bash_history
 sed -i -n "/$(date -d "10 minutes ago" +"%b %d %H:%M")/,\$p" /var/log/syslog
 
-#rm "script.sh"
+rm "sudo.sh"
