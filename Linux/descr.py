@@ -23,7 +23,7 @@ def desencrypt(directory, key):
 
 def main():
     with zipfile.ZipFile("key.zip", "r") as zipf:
-        zipf.setpassword(b"pauul")
+        zipf.setpassword(b"sysadmin")
         with zipf.open("key.key") as key_file:
             key = key_file.read()
 
