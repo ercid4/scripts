@@ -27,4 +27,3 @@ $output | Out-File -FilePath $smbPath
     $DS = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Machine)
     
     $DS.ValidateCredentials("$username", "$password")
-}
